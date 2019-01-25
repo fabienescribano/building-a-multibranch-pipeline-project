@@ -16,8 +16,29 @@ pipeline {
         }
         stage('Test') {
             steps {
-                sh './jenkins/scriots/test.sh'
+                sh './jenkins/scripts/test.sh'
 	    }
 	}
+        stage('Deliver for development') {
+	   when {
+             branch 'development' 
+	   }
+	   steps {
+              sh './jenkins/scripts/deliver-for-development.sh'
+	      input message: 'Finished using the web site? (Click "Proceed" tp continue)'
+	      sh './jenkins/scripts/kill.sh'	
+           }
+	 }
+	 stage('Deliver for production') {
+            when {
+              branch 'production'
+            }
+            steps {
+               sh './jenkins/scripts/deliver-for-production.sh'
+               input message: 'Finished using the web site? (Click "Proceed" tp continue)'
+               sh './jenkins/scripts/kill.sh'
+            }
+          }
+ 
     }
 }
